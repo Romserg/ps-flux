@@ -6,8 +6,8 @@ class CoursesPage extends React.Component {
     courses: []
   };
 
-  componentDidMount() {
-    getCourses().then(courses => this.setState({ courses: courses }));
+  async componentDidMount() {
+    this.setState({ courses: await getCourses() });
   }
 
   render() {
