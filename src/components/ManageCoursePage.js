@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import { Prompt } from "react-router-dom";
 import CourseForm from "./CourseForm";
 import * as courseApi from "../api/courseApi";
 import { toast } from "react-toastify";
+import { getCourseBySlug } from "../api/courseApi";
 
 const MangeCoursePage = props => {
   const [errors, setErrors] = useState({});
@@ -14,6 +15,15 @@ const MangeCoursePage = props => {
     category: ""
   });
 
+  useEffect( () => {
+    const slug = props.match.params.slug;
+    if(slug) {
+      getCourseBySlug(slug).then(
+        _course => setCourse(_course)
+      )
+    }
+  }, [props.match.params.slug]);
+
   function handleChange({ target }) {
     setCourse({ ...course, [target.name]: target.value });
   }
@@ -21,9 +31,9 @@ const MangeCoursePage = props => {
   function formIsValid() {
     const _errors = {};
 
-    if(!course.title) _errors.title = 'Title is required';
-    if(!course.authorId) _errors.authorId = 'Author ID is required';
-    if(!course.category) _errors.category = 'Category is required';
+    if (!course.title) _errors.title = 'Title is required';
+    if (!course.authorId) _errors.authorId = 'Author ID is required';
+    if (!course.category) _errors.category = 'Category is required';
 
     setErrors(_errors);
     return Object.keys(_errors).length === 0;
@@ -31,7 +41,7 @@ const MangeCoursePage = props => {
 
   function handleSubmit(event) {
     event.preventDefault();
-    if(!formIsValid()) return;
+    if (!formIsValid()) return;
     courseApi.saveCourse(course).then(() => {
       props.history.push("/courses");
       toast.success('Course saved.');
@@ -42,7 +52,7 @@ const MangeCoursePage = props => {
     <>
       <h2>Manage Course</h2>
       {/*<Prompt when={true} message="Are you sure you want to leave?" />*/}
-      <CourseForm course={course} onChange={handleChange} onSubmit={handleSubmit} errors={errors} />
+      <CourseForm course={course} onChange={handleChange} onSubmit={handleSubmit} errors={errors}/>
     </>
   );
 };
